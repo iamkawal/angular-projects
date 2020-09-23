@@ -4,3 +4,6 @@
 
 # Want to ignore node_modules of each project in this repo
 /*/node_modules
+
+#Miscellaneous files
+.DS_store
