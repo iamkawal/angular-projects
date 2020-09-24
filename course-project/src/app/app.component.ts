@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Recipe maker';
-  loadedFeature = 'recipes';
+  loadedFeature = 'shoppingList';
 
   onFeature(event: string): void {
     console.log('onFeature received an event:', event);
