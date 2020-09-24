@@ -1,6 +1,7 @@
 #projects that I don't want to keep track of 
 /Section\ 5
 /basics
+/directives-start
 
 # Want to ignore node_modules of each project in this repo
 /*/node_modules
