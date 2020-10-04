@@ -1,7 +1,9 @@
-import { EventEmitter } from '@angular/core';
+import { ShoppingListService } from './../shopping-list/shopping-list.service';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Ingredient } from '../shared/ingredients.model';
 import { Recipe } from './recipes.model';
 
+@Injectable()
 export class RecipeService {
   recipeSelected = new EventEmitter<Recipe>();
   private recipes: Recipe[] = [
@@ -19,7 +21,15 @@ export class RecipeService {
     ),
   ];
 
+  constructor(private ShoppingListService: ShoppingListService) {}
+
   getRecipes() {
     return this.recipes.slice(); // with .slice() we are returning a copy of recipes[] not a pointer to recipes[]
+  }
+
+  addRecipeIngredientsToShoppingList(recipe: Recipe) {
+    recipe.ingredients.forEach((ingredient) => {
+      this.ShoppingListService.addNewIngredient(ingredient);
+    });
   }
 }
