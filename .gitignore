@@ -4,6 +4,7 @@
 /directives-start
 /services-start
 /services-assignment-start
+/routing-start
 
 # Want to ignore node_modules of each project in this repo
 /*/node_modules
