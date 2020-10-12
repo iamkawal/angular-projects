@@ -5,6 +5,7 @@
 /services-start
 /services-assignment-start
 /routing-start
+/obs-01-start
 
 # Want to ignore node_modules of each project in this repo
 /*/node_modules
