@@ -221,7 +221,7 @@
 
    We can see that we have three routes that start with 'servers'. There is a better way of defining routes that will give us the ability to do more. Since `servers/:id` and `servers/:id/edit` are made off of `servers`, we can define them as child routes.
 
-2. Defining child routes: any Route can have a children property where we can define child routes. Note that `children` property accepts a list of routes.
+2. Defining child routes: any Route can have a `children` property where we can define child routes. Note that `children` property accepts a list of routes.
 
    ```ts
    routes: Routes = [
@@ -307,4 +307,138 @@
    ```ts
       { path: "not-found", component: PageNotFoundComponent },
       { path: "**", redirectTo: "/not-found" }, // or { path: "**", component: PageNotFoundComponent }
+   ```
+
+   **One more important note**
+   By default, Angular matches paths by prefix. That means, that the following route will match both /recipes and just /
+
+   `{ path: '', redirectTo: '/somewhere-else' } `
+
+   Actually, Angular will give you an error here, because that's a common gotcha: This route will now ALWAYS redirect you! Why?
+
+   Since the default matching strategy is "prefix" , Angular checks if the path you entered in the URL does start with the path specified in the route. Of course every path starts with '' (Important: That's no whitespace, it's simply "nothing").
+
+   To fix this behavior, you need to change the matching strategy to "full" :
+
+   `{ path: '', redirectTo: '/somewhere-else', pathMatch: 'full' } `
+
+   Now, you only get redirected, if the full path is '' (so only if you got NO other content in your path in this example).
+
+### Lecture 146
+
+1. Guarding routes. What if you want to check if the current user has access to a route or not before showing them a specific page? Angular provides a convenient way of doing this.We can specify a guard by setting a `canActivate` property of a route
+
+   ```ts
+   // a route that we want to protect
+    {
+       path: "servers",
+       component: ServersComponent,
+       canActivate: [AuthGuard], //<- custom made
+       children: [
+         { path: ":id", component: ServerComponent },
+         { path: ":id/edit", component: EditServerComponent },
+       ],
+     },
+   ```
+
+   ```ts
+   //our guard will implement a `CanActivate` interface
+   // don't forget to include me in the app module
+   @Injectable()
+   export class AuthGuard implements CanActivate {
+     constructor(private authService: AuthService, private router: Router) {}
+
+     canActivate(
+       route: ActivatedRouteSnapshot,
+       state: RouterStateSnapshot
+     ): Observable<boolean> | Promise<boolean> | boolean {
+       return this.authService
+         .isAuthenticated()
+         .then((authenticated: boolean) => {
+           if (authenticated) {
+             return true;
+           } else {
+             this.router.navigate(["/"]);
+           }
+         });
+     }
+   }
+   ```
+
+   ```ts
+   // a mock custom auth service we made that is injected in our auth guard
+   // don't forget to include me in the app module
+   export class AuthService {
+     loggedIn = false;
+
+     isAuthenticated() {
+       const promise = new Promise((resolve, reject) => {
+         setTimeout(() => {
+           resolve(this.loggedIn);
+         }, 800);
+       });
+
+       return promise;
+     }
+
+     logIn() {
+       this.loggedIn = true;
+     }
+
+     logOut() {
+       this.loggedIn = false;
+     }
+   }
+   ```
+
+   After this, all routes with matching prefix `/servers` will be redirected to `/`
+
+### Lecture 147
+
+1. Can we implemnt guards for only child routes? Yes!
+
+```ts
+ // a route that we want to protect
+  {
+     path: "servers",
+     component: ServersComponent,
+     canActivateChild: [AuthGuard], //<- Your AuthGuard will have to implement `CanActivateChild` interface
+     children: [
+       { path: ":id", component: ServerComponent },
+       { path: ":id/edit", component: EditServerComponent },
+     ],
+   },
+```
+
+### Lecture 149
+
+1. `CanActivate` gives us the ability to check for access before rendering the view. What if we want to check access when a user wants to leave a view? For example let's say you have a form on your website the user can fill in. The user might fill in the form and without hitting 'submit' they try to move to a different URL. In this case, you might want to confirm with user if they really want to leave (since the 'submit' btn hasn't been clicked yet)
+
+   This is where `canDeactivate` comes in.
+
+2. confirm() <- a function provided by javascript that displays a modal dialog with an optional message and two buttons: OK and Cancel and returns a boolean
+
+3. [ACTION ITEM]() Go through this lecture again
+
+### Lecture 150
+
+1. Passing static data to routes:
+
+   ```ts
+   routes: Routes = [
+     {
+       path: "/fruits",
+       component: fruitsComponent,
+       data: { message: "Some important data about fruits" }, //<- key value pairs
+     },
+   ];
+   ```
+
+   ```ts
+   // in your component ts
+   // route: ActivatedRoute
+   this.route.data.subscribe((data) => {
+     // do something with the data here
+     console.log(data["message"]);
+   });
    ```
