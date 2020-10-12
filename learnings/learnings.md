@@ -147,7 +147,9 @@
 
 ### Lecture 135
 
-1. Angular cleans up the subscriptions in a component whenever a component is destroyed. To be safe, implementing ngOnDestroy and then unsubscribing the subscription can benifit. That means your subscription won't be living in memory even if your component is destroyed.
+1. Angular ~~cleans up the subscriptions in a component whenever a component is destroyed~~. To be safe, implementing ngOnDestroy and then unsubscribing the subscription can benifit. That means your subscription won't be living in memory even if your component is destroyed.
+
+   **Correction**: Angular cleans up only those subscriptions that correspond to observables provided by angular. Any subscriptions that correspond to custom made observables/subjects will not be destroyed by angular.
 
    ```ts
       ngOnDestroy() {
