@@ -444,3 +444,154 @@
      console.log(data["message"]);
    });
    ```
+
+### Forms: Template Driven Design
+
+**Starter Notes**
+
+- Use `ngModel` directive to specify that an input is a form control.
+
+- Property binding with `ngModel` will let you bind properties to value of input element. This can help to set (initial)default value of an input.
+
+- Two way binding with ngModel will let you do something with the current value of an input, in your code.
+
+- The NgForm directive creates a top-level FormGroup instance and binds it to a <form> element to track aggregated form value and validation status. `<form #myForm="ngForm"></form>`
+
+1. To add native HTML5 validation to angular, can put `ngNativeValidate` to a form tag
+
+   ```html
+   <form #ourForm="ngForm" ngNativeValidate>some inputs here</form>
+   ```
+
+2. Form Validation: We can use angular provided validators like: `required`, `email` etc
+
+   ```html
+   <form #myForm="ngForm">
+     <div class="form-group">
+       <label for="username">Username</label>
+       <input
+         type="text"
+         id="username"
+         class="form-control"
+         ngModel
+         name="username"
+         required
+       />
+     </div>
+     <button class="btn btn-primary" [disabled]="f.invalid" type="submit">
+       Submit (myForm.invalid looks at the `invalid` property of form)
+     </button>
+   </form>
+   ```
+
+3. Angular adds css classes to input elements as the user inputs data. For example: if we have an email validator on an input, and the user input turns out to be invalid, Angular will add `ng-invalid` class to the input.
+
+4. We can make use of this fact(point 4) and style our elements if they fail validation: The example below will put a red border on all input elements that are touched && the validation fails.
+
+   ```css
+   input.ng-invalid.ng-touched {
+     border: 1px solid red;
+   }
+   ```
+
+5. What if we want to do something unique for a specific input when validation fails for that input. We can do so by passing in `ngModel` to the reference of that element. In the example below, if email field is touched && input is invalid then we are going to show text: "Please enter a valid email".
+   tags: Passing `ngModel` to ref of an input element, getting value of an input element from within the template.
+
+   ```html
+     <div class="form-group">
+            <input
+              type="email"
+              required
+              email
+              #email="ngModel"
+            />
+            <span *ngIf="email.invalid && email.touched" class="help-block"
+              >Please enter a valid email</span
+            >
+          </div>
+        </div>
+   ```
+
+   Note: this is different for the `form` tag. We do `<form #f="ngForm"></form>`.
+
+6. Setting up a default value for an input. Say a `select` input. Use property binding with `ngModel`. So default value in the input would be `[ngModel]="some property in component ts file"`]
+
+   ```html
+   <div class="form-group">
+     <label for="secret">Secret Questions</label>
+     <select
+       id="secret"
+       class="form-control"
+       ngModel
+       name="secret"
+       [ngModel]="defaultQuestion"
+       required
+     >
+       <option value="pet">Your first Pet?</option>
+       <option value="teacher">Your first teacher?</option>
+     </select>
+   </div>
+   ```
+
+7. Let's say you want to group some inputs together. For ex: group email input & userName input under 'userData'. How would you create a form group ?
+
+   ```html
+   <form>
+     <div ngModelGroup="userData">
+       <input 1 />
+       <input 2 />
+     </div>
+
+     <!--Now  userData will be it's own form control with it's own properties   -->
+     <p *ngIf="userData.invalid">UserData is invalid</p>
+
+     <input 3 />
+   </form>
+   ```
+
+8. What if you want to update a value of an input programatically? You can first get access to your form using `@ViewChild()` and then using `patch` property of `form` property in the child. here's an example:
+
+   this will only update value of input that has `name="username"`
+
+   ```ts
+
+     @ViewChild("f", { static: true }) signupForm: NgForm;
+
+     suggestUserName() {
+       const suggestedName = "Superuser";
+       this.signupForm.form.patchValue({ userData: { username: suggestedName } });
+     }
+
+   ```
+
+   To update all of the form inputs we can do `this.signupForm.setValue()` and pass an object describing all of our form inputs:
+
+   ```ts
+    @ViewChild("f", { static: true }) signupForm: NgForm;
+
+     suggestUserName() {
+       const suggestedName = "Superuser";
+       this.signupForm.setValue({
+         userData: {
+           username: suggestedName,
+           email: "",
+         },
+         secret: "pet",
+         questionAnswer: "alsdkjf",
+         gender: "male",
+       });
+   }
+   ```
+
+9. To reset a form after let's say the submit button is hit, you can have:
+
+   ```ts
+     @ViewChild("f", { static: true }) signupForm: NgForm;
+
+     onSubmit() {
+       console.log(this.signupForm);
+       this.signupForm.reset();
+     }
+   ```
+
+   This will reset
