@@ -7,6 +7,8 @@
 /routing-start
 /obs-01-start
 /forms-td-start
+/forms-tdd-practice
+/forms-reactive-start
 
 # Want to ignore node_modules of each project in this repo
 /*/node_modules
