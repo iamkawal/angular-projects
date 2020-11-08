@@ -9,6 +9,8 @@
 /forms-td-start
 /forms-tdd-practice
 /forms-reactive-start
+/http-01-start
+/http-02-post-requests
 
 # Want to ignore node_modules of each project in this repo
 /*/node_modules
